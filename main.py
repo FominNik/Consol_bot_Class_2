@@ -3,9 +3,9 @@ import datetime
 
 
 def input_error(handler):
-    def inner(name, *args):
+    def inner(*args):
         try:
-            return handler(name, *args)
+            return handler(*args)
         except (KeyError, ValueError, IndexError) as error:
             return str(error)
     return inner
@@ -58,31 +58,26 @@ def main():
     contacts = AddressBook()
     print("Welcome to the assistant!")
 
+    handlers = {
+        "add": add_contact,
+        "change": change_contact,
+        "phone": find_contact,
+        "birthday": days_to_birthday,
+        "show all": show_all
+    }
+
     while True:
         user_input = input("\nEnter your command: ").strip().lower()
-        words = user_input.split()
+        command, *data = user_input.split(' ', 1)
 
         if user_input in ["good bye", "close", "exit"]:
             print("Good bye!")
             break
         elif user_input == "hello":
             print("How can I help you?")
-        elif words[0] == "add":
-            print(add_contact(
-                contacts, words[1], words[2], words[3] if len(words) > 3 else None))
-        elif words[0] == "change":
-            print(change_contact(
-                contacts, words[1], words[2], words[3] if len(words) > 3 else None))
-        elif words[0] == "phone":
-            print(find_contact(contacts, words[1]))
-        elif words[0] == "birthday":
-            days = days_to_birthday(contacts, words[1])
-            if days is not None:
-                print(f"Days until next birthday: {days}")
-            else:
-                print("Birthday not set for this contact.")
-        elif user_input == "show all":
-            print(show_all(contacts))
+        elif command in handlers:
+            data = data[0].split(',') if data else []
+            print(handlers[command](contacts, *data))
         else:
             print("Command not recognized. Try again.")
 

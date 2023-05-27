@@ -6,7 +6,10 @@ import re
 
 class Field:
     def __init__(self, value=None):
-        self.value = value
+        self.value = self.process_input(value)
+
+    def process_input(self, value):
+        return value
 
 
 class Name(Field):
@@ -14,17 +17,17 @@ class Name(Field):
 
 
 class Phone(Field):
-    def __init__(self, value):
+    def process_input(self, value):
         if not re.match(r'^\+?1?\d{9,15}$', value):
             raise ValueError("Invalid phone number")
-        self.value = value
+        return value
 
 
 class Birthday(Field):
-    def __init__(self, value: Optional[datetime.date]):
+    def process_input(self, value: Optional[datetime.date]):
         if value is not None and not isinstance(value, datetime.date):
             raise ValueError("Invalid date")
-        self.value = value
+        return value
 
 
 class Record:
